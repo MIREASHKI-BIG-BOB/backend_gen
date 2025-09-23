@@ -2,8 +2,13 @@ package server
 
 import (
 	"backend_gen/config"
+	wsAdapter "backend_gen/internal/adapter/websocket"
 	"backend_gen/internal/handlers/health"
+	wsHandler "backend_gen/internal/handlers/websocket"
+	"backend_gen/internal/ports/websocket"
+	"backend_gen/internal/usecase"
 	healthUC "backend_gen/internal/usecase/health"
+	wsUC "backend_gen/internal/usecase/websocket"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -15,9 +20,15 @@ import (
 type Server struct {
 	cfg *config.Config
 
-	router   *chi.Mux
-	server   *http.Server
-	healthUC healthUC.HealthUseCase
+	router *chi.Mux
+	server *http.Server
+
+	// adapters
+	wsClient websocket.Client
+
+	// usecases
+	healthUC         usecase.HealthUseCase
+	websocketUseCase usecase.WebSocketUseCase
 }
 
 func New(cfg *config.Config) (*Server, error) {
@@ -29,14 +40,20 @@ func New(cfg *config.Config) (*Server, error) {
 }
 
 func (s *Server) init() error {
+	s.initAdapters()
 	s.initUseCases()
 	s.initRouter()
 	s.initHTTPServer()
 	return nil
 }
 
+func (s *Server) initAdapters() {
+	s.wsClient = wsAdapter.NewClient()
+}
+
 func (s *Server) initUseCases() {
 	s.healthUC = healthUC.NewHealthUseCase()
+	s.websocketUseCase = wsUC.NewWebSocketUseCase(s.wsClient)
 }
 
 func (s *Server) initHTTPServer() {
@@ -61,6 +78,8 @@ func (s *Server) initRouter() {
 
 	s.router.Route("/api", func(r chi.Router) {
 		r.Get("/health", health.NewHealthHandler(s.healthUC))
+		r.Get("/on", wsHandler.OnSocket(s.websocketUseCase))
+		r.Get("/off", wsHandler.OffSocket(s.websocketUseCase))
 	})
 }
 

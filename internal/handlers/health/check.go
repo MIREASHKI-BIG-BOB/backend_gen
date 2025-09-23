@@ -1,12 +1,12 @@
 package health
 
 import (
-	"backend_gen/internal/usecase/health"
+	"backend_gen/internal/usecase"
 	"backend_gen/pkg/http/writer"
 	"net/http"
 )
 
-func NewHealthHandler(healthUC health.HealthUseCase) http.HandlerFunc {
+func NewHealthHandler(healthUC usecase.HealthUseCase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		response := healthUC.CheckHealth()
 

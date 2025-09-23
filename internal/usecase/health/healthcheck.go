@@ -1,10 +1,13 @@
 package health
 
-import "backend_gen/internal/models/dto"
+import (
+	"backend_gen/internal/models/dto"
+	"backend_gen/internal/usecase"
+)
 
 type healthUseCase struct{}
 
-func NewHealthUseCase() HealthUseCase {
+func NewHealthUseCase() usecase.HealthUseCase {
 	return &healthUseCase{}
 }
 
