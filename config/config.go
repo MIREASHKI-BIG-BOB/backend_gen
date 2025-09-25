@@ -1,13 +1,19 @@
 package config
 
 import (
-	"gopkg.in/yaml.v3"
 	"io"
 	"os"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
 	Server server
+	Log    log
+}
+
+type log struct {
+	Level string `yaml:"level"`
 }
 
 type server struct {

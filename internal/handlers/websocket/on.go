@@ -9,12 +9,20 @@ import (
 
 func OnSocket(uc usecase.WebSocketUseCase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := uc.Connect("sex")
+		url := "ws://localhost:8081/ws"
+		err := uc.Connect(url)
 		if err != nil {
 			httpErr.InternalError(w, fmt.Errorf("failed to connect: %w", err))
 			return
 		}
-		
+
+		// Запускаем отправку сообщений каждую секунду
+		err = uc.StartSendingMessages()
+		if err != nil {
+			httpErr.InternalError(w, fmt.Errorf("failed to start sending messages: %w", err))
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 	}
 }

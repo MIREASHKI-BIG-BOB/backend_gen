@@ -10,11 +10,13 @@ import (
 	healthUC "backend_gen/internal/usecase/health"
 	wsUC "backend_gen/internal/usecase/websocket"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
 	"log"
+	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 type Server struct {
@@ -57,8 +59,9 @@ func (s *Server) initUseCases() {
 }
 
 func (s *Server) initHTTPServer() {
+	addr := fmt.Sprintf("%s:%s", s.cfg.Server.Addr, s.cfg.Server.Port)
 	s.server = &http.Server{
-		Addr:         fmt.Sprintf("%s:%s", s.cfg.Server.Addr, s.cfg.Server.Port),
+		Addr:         addr,
 		Handler:      s.router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -67,7 +70,6 @@ func (s *Server) initHTTPServer() {
 
 func (s *Server) initRouter() {
 	s.router = chi.NewRouter()
-
 	s.router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "PATCH", "OPTIONS"},
@@ -84,7 +86,7 @@ func (s *Server) initRouter() {
 }
 
 func (s *Server) Run() {
-	log.Println("Server started")
+	slog.Info("Starting HTTP server", "addr", s.server.Addr)
 	if err := s.server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}

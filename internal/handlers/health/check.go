@@ -8,13 +8,13 @@ import (
 
 func NewHealthHandler(healthUC usecase.HealthUseCase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		response := healthUC.CheckHealth()
 
 		if response.Status != "OK" {
 			http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
 			return
 		}
-
 		writer.WriteStatusOK(w)
 		writer.WriteJson(w, response)
 	}

@@ -9,12 +9,15 @@ import (
 
 func OffSocket(uc usecase.WebSocketUseCase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Останавливаем отправку сообщений
+		uc.StopSendingMessages()
+
 		err := uc.Disconnect()
 		if err != nil {
 			httpErr.InternalError(w, fmt.Errorf("failed to disconnect: %w", err))
 			return
 		}
-		
+
 		w.WriteHeader(http.StatusOK)
 	}
 }

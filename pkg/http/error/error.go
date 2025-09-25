@@ -29,7 +29,7 @@ func NotFound(w http.ResponseWriter, err error) {
 func httpError(w http.ResponseWriter, code int, err error) {
 	w.WriteHeader(code)
 
-	json.NewEncoder(w).Encode(
+	err = json.NewEncoder(w).Encode(
 		Response{
 			Error: RespErr{
 				Message: err.Error(),
@@ -37,4 +37,7 @@ func httpError(w http.ResponseWriter, code int, err error) {
 			},
 		},
 	)
+	if err != nil {
+		return
+	}
 }
