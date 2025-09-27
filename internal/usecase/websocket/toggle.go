@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"backend_gen/internal/ports/generator"
 	"backend_gen/internal/ports/websocket"
 	"backend_gen/internal/usecase"
 	"encoding/json"
@@ -10,9 +11,11 @@ import (
 )
 
 type WebSocketUseCase struct {
-	client websocket.Client
-	ticker *time.Ticker
-	stopCh chan bool
+	client    websocket.Client
+	generator generator.DataGenerator
+	ticker    *time.Ticker
+	stopCh    chan bool
+	startTime time.Time
 }
 
 func (uc *WebSocketUseCase) Connect(url string) error {
@@ -49,7 +52,6 @@ func (uc *WebSocketUseCase) SendMessage(message any) error {
 		return fmt.Errorf("not connected")
 	}
 
-	// Сериализуем в JSON
 	jsonData, err := json.Marshal(message)
 	if err != nil {
 		slog.Error("Failed to marshal message to JSON", "error", err)
@@ -67,18 +69,26 @@ func (uc *WebSocketUseCase) StartSendingMessages() error {
 		uc.StopSendingMessages()
 	}
 
-	slog.Info("Starting periodic message sending", "interval", "1s")
+	slog.Info("Starting periodic message sending", "interval", "120ms")
 
-	uc.ticker = time.NewTicker(1 * time.Second)
+	//.12 сек
+	uc.ticker = time.NewTicker(120 * time.Millisecond)
 	uc.stopCh = make(chan bool)
+	uc.startTime = time.Now()
 
 	go func() {
 		for {
 			select {
 			case <-uc.ticker.C:
+				elapsed := time.Since(uc.startTime).Seconds()
+				sensorData := uc.generator.GenerateNext(elapsed)
+
+				// соо
 				message := websocket.MessageData{
-					Sex: "yes",
+					Timestamp: elapsed,
+					Data:      sensorData,
 				}
+
 				if err := uc.SendMessage(message); err != nil {
 					slog.Error("Failed to send periodic JSON message", "error", err)
 				}
@@ -103,8 +113,9 @@ func (uc *WebSocketUseCase) StopSendingMessages() {
 	}
 }
 
-func NewWebSocketUseCase(client websocket.Client) usecase.WebSocketUseCase {
+func NewWebSocketUseCase(client websocket.Client, dataGenerator generator.DataGenerator) usecase.WebSocketUseCase {
 	return &WebSocketUseCase{
-		client: client,
+		client:    client,
+		generator: dataGenerator,
 	}
 }

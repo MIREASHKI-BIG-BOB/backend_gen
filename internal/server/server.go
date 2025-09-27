@@ -2,9 +2,11 @@ package server
 
 import (
 	"backend_gen/config"
+	generatorAdapter "backend_gen/internal/adapter/generator"
 	wsAdapter "backend_gen/internal/adapter/websocket"
 	"backend_gen/internal/handlers/health"
 	wsHandler "backend_gen/internal/handlers/websocket"
+	"backend_gen/internal/ports/generator"
 	"backend_gen/internal/ports/websocket"
 	"backend_gen/internal/usecase"
 	healthUC "backend_gen/internal/usecase/health"
@@ -26,7 +28,8 @@ type Server struct {
 	server *http.Server
 
 	// adapters
-	wsClient websocket.Client
+	wsClient      websocket.Client
+	dataGenerator generator.DataGenerator
 
 	// usecases
 	healthUC         usecase.HealthUseCase
@@ -51,11 +54,12 @@ func (s *Server) init() error {
 
 func (s *Server) initAdapters() {
 	s.wsClient = wsAdapter.NewClient()
+	s.dataGenerator = generatorAdapter.NewSinusoidalGenerator()
 }
 
 func (s *Server) initUseCases() {
 	s.healthUC = healthUC.NewHealthUseCase()
-	s.websocketUseCase = wsUC.NewWebSocketUseCase(s.wsClient)
+	s.websocketUseCase = wsUC.NewWebSocketUseCase(s.wsClient, s.dataGenerator)
 }
 
 func (s *Server) initHTTPServer() {

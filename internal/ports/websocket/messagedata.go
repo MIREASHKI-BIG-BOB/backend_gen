@@ -1,5 +1,12 @@
 package websocket
 
 type MessageData struct {
-	Sex string `json:"sex"`
+	Timestamp float64    `json:"timestamp"`
+	Data      SensorData `json:"data"`
+}
+
+// показания сенсоров
+type SensorData struct {
+	BPM    float64 `json:"bpm"`
+	Uterus float64 `json:"uterus"`
 }
