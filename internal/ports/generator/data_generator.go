@@ -26,6 +26,11 @@ type GenerationParameters struct {
 	UterusAmplitude float64 // Амплитуда колебаний Uterus
 	UterusFrequency float64 // Частота колебаний Uterus
 
+	// Spasms параметры
+	SpasmsBase      float64 // Базовое значение Spasms
+	SpasmsAmplitude float64 // Амплитуда колебаний Spasms
+	SpasmsFrequency float64 // Частота колебаний Spasms
+
 	// Общие параметры
 	NoiseLevel float64 // Уровень шума (0-1)
 }

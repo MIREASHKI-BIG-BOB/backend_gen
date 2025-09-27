@@ -30,6 +30,11 @@ func NewSinusoidalGenerator() generator.DataGenerator {
 			UterusAmplitude: 60.0,
 			UterusFrequency: 0.3, // Hz
 
+			// Параметры по умолчанию для Spasms
+			SpasmsBase:      45.0, // Базовое значение схваток
+			SpasmsAmplitude: 35.0, // Амплитуда схваток
+			SpasmsFrequency: 0.4,  // Hz
+
 			NoiseLevel: 0.05, // 5% шума
 		},
 		rng: rand.New(rand.NewSource(time.Now().UnixNano())),
@@ -57,9 +62,18 @@ func (g *sinusoidalGenerator) GenerateNext(timestamp float64) websocket.SensorDa
 		uterus += g.generateNoise() * g.params.UterusAmplitude * 0.5
 	}
 
+	spasmsSin := math.Sin(2 * math.Pi * g.params.SpasmsFrequency * timestamp)
+	spasmsNoise := g.generateNoise() * g.params.NoiseLevel * g.params.SpasmsAmplitude
+	spasms := g.params.SpasmsBase + g.params.SpasmsAmplitude*spasmsSin + spasmsNoise
+
+	if g.rng.Float64() < 0.015 { // 1.5% вероятность скачка для spasms
+		spasms += g.generateNoise() * g.params.SpasmsAmplitude * 0.4
+	}
+
 	return websocket.SensorData{
 		BPM:    math.Max(0, bpm),    // Обеспечиваем неотрицательность
 		Uterus: math.Max(0, uterus), // Обеспечиваем неотрицательность
+		Spasms: math.Max(0, spasms), // Обеспечиваем неотрицательность
 	}
 }
 

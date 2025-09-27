@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"backend_gen/internal/constants"
 	"backend_gen/internal/ports/generator"
 	"backend_gen/internal/ports/websocket"
 	"backend_gen/internal/usecase"
@@ -85,8 +86,9 @@ func (uc *WebSocketUseCase) StartSendingMessages() error {
 
 				// соо
 				message := websocket.MessageData{
-					Timestamp: elapsed,
-					Data:      sensorData,
+					SensorID:     constants.SensorUUID,
+					SecFromStart: elapsed,
+					Data:         sensorData,
 				}
 
 				if err := uc.SendMessage(message); err != nil {
