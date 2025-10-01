@@ -7,13 +7,17 @@ import (
 	"log"
 	"log/slog"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	cfgPath := flag.String("c", "config/config.yaml", "path to config file")
 	flag.Parse()
 
-	// Настройка логгера
+	if err := godotenv.Load(); err != nil {
+		slog.Warn("No .env file found or error loading it", "error", err)
+	}
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelInfo,
 	}))

@@ -4,6 +4,7 @@ import (
 	"backend_gen/internal/ports/websocket"
 	"fmt"
 	"log/slog"
+	"net/http"
 
 	gorillaWS "github.com/gorilla/websocket"
 )
@@ -13,12 +14,25 @@ type client struct {
 	url  string
 }
 
-func (c *client) Connect(url string) error {
-	slog.Info("Connecting to WebSocket server", "url", url)
+func (c *client) Connect(url string, token string) error {
+	slog.Info("Connecting to WebSocket server", "url", url, "token_length", len(token))
 
-	conn, _, err := gorillaWS.DefaultDialer.Dial(url, nil)
+	headers := http.Header{}
+	headers.Set("X-Auth-Sensor-Token", token)
+
+	slog.Info("WebSocket headers prepared", "headers", headers)
+
+	conn, resp, err := gorillaWS.DefaultDialer.Dial(url, headers)
 	if err != nil {
-		slog.Error("Failed to dial WebSocket server", "url", url, "error", err)
+		if resp != nil {
+			slog.Error("Failed to dial WebSocket server",
+				"url", url,
+				"error", err,
+				"status_code", resp.StatusCode,
+				"status", resp.Status)
+		} else {
+			slog.Error("Failed to dial WebSocket server", "url", url, "error", err)
+		}
 		return err
 	}
 

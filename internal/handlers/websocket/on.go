@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-func OnSocket(uc usecase.WebSocketUseCase) http.HandlerFunc {
+func OnSocket(uc usecase.WebSocketUseCase, sensorID string, sensorToken string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		url := "ws://localhost:8081/ws"
-		err := uc.Connect(url)
+		url := fmt.Sprintf("ws://localhost:8080/ws/sensor?sensor_id=%s", sensorID)
+		err := uc.Connect(url, sensorToken)
 		if err != nil {
 			httpErr.InternalError(w, fmt.Errorf("failed to connect: %w", err))
 			return

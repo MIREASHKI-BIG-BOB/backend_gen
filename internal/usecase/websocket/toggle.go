@@ -19,12 +19,12 @@ type WebSocketUseCase struct {
 	startTime time.Time
 }
 
-func (uc *WebSocketUseCase) Connect(url string) error {
+func (uc *WebSocketUseCase) Connect(url string, token string) error {
 	if uc.client.IsConnected() {
 		return fmt.Errorf("already connected")
 	}
 
-	err := uc.client.Connect(url)
+	err := uc.client.Connect(url, token)
 	if err != nil {
 		return err
 	}

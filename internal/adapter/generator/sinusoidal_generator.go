@@ -71,9 +71,9 @@ func (g *sinusoidalGenerator) GenerateNext(timestamp float64) websocket.SensorDa
 	}
 
 	return websocket.SensorData{
-		BPM:    math.Max(0, bpm),    // Обеспечиваем неотрицательность
-		Uterus: math.Max(0, uterus), // Обеспечиваем неотрицательность
-		Spasms: math.Max(0, spasms), // Обеспечиваем неотрицательность
+		BPMChild: math.Max(0, bpm),
+		Uterus:   math.Max(0, uterus),
+		Spasms:   math.Max(0, spasms),
 	}
 }
 

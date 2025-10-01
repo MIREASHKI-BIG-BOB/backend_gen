@@ -84,7 +84,7 @@ func (s *Server) initRouter() {
 
 	s.router.Route("/api", func(r chi.Router) {
 		r.Get("/health", health.NewHealthHandler(s.healthUC))
-		r.Get("/on", wsHandler.OnSocket(s.websocketUseCase))
+		r.Get("/on", wsHandler.OnSocket(s.websocketUseCase, s.cfg.Server.SensorID, s.cfg.Server.SensorToken))
 		r.Get("/off", wsHandler.OffSocket(s.websocketUseCase))
 	})
 }

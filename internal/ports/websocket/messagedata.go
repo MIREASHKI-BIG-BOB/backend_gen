@@ -7,7 +7,7 @@ type MessageData struct {
 }
 
 type SensorData struct {
-	BPM    float64 `json:"bpm"`
-	Uterus float64 `json:"uterus"`
-	Spasms float64 `json:"spasms"`
+	BPMChild float64 `json:"bpmChild"`
+	Uterus   float64 `json:"uterus"`
+	Spasms   float64 `json:"spasms"`
 }

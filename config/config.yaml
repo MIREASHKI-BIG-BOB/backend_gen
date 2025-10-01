@@ -1,6 +1,6 @@
 server:
   addr: "localhost"
   port: "8082"
-
+  sensor_id: "1234567890"
 log:
   level: "info"
