@@ -1,6 +1,12 @@
 package server
 
 import (
+	"fmt"
+	"log"
+	"log/slog"
+	"net/http"
+	"time"
+
 	"backend_gen/config"
 	generatorAdapter "backend_gen/internal/adapter/generator"
 	wsAdapter "backend_gen/internal/adapter/websocket"
@@ -11,11 +17,6 @@ import (
 	"backend_gen/internal/usecase"
 	healthUC "backend_gen/internal/usecase/health"
 	wsUC "backend_gen/internal/usecase/websocket"
-	"fmt"
-	"log"
-	"log/slog"
-	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -84,7 +85,16 @@ func (s *Server) initRouter() {
 
 	s.router.Route("/api", func(r chi.Router) {
 		r.Get("/health", health.NewHealthHandler(s.healthUC))
-		r.Get("/on", wsHandler.OnSocket(s.websocketUseCase, s.cfg.Server.SensorID, s.cfg.Server.SensorToken))
+		r.Get(
+			"/on",
+			wsHandler.OnSocket(
+				s.websocketUseCase,
+				s.cfg.Server.SensorID,
+				s.cfg.Server.SensorToken,
+				s.cfg.WebSocket.Addr,
+				s.cfg.WebSocket.Port,
+			),
+		)
 		r.Get("/off", wsHandler.OffSocket(s.websocketUseCase))
 	})
 }

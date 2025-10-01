@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	Server server
-	Log    log
+	Server    server
+	Log       log
+	WebSocket websocket
 }
 
 type log struct {
@@ -18,10 +19,15 @@ type log struct {
 }
 
 type server struct {
-	Addr        string `yaml:"addr"`
-	Port        string `yaml:"port"`
-	SensorID    string `envconfig:"SENSOR_ID" yaml:"sensor_id"`
-	SensorToken string `envconfig:"SENSOR_TOKEN" yaml:"sensor_token"`
+	Addr        string `yaml:"addr" envconfig:"SERVER_ADDR"`
+	Port        string `yaml:"port" envconfig:"SERVER_PORT"`
+	SensorID    string `yaml:"sensor_id" envconfig:"SENSOR_ID"`
+	SensorToken string `yaml:"sensor_token" envconfig:"SENSOR_TOKEN"`
+}
+
+type websocket struct {
+	Addr string `yaml:"addr" envconfig:"WEBSOCKET_ADDR"`
+	Port string `yaml:"port" envconfig:"WEBSOCKET_PORT"`
 }
 
 func ReadConfig(path string) (*Config, error) {

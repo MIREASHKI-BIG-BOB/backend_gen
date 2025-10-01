@@ -1,15 +1,22 @@
 package websocket
 
 import (
-	"backend_gen/internal/usecase"
-	httpErr "backend_gen/pkg/http/error"
 	"fmt"
 	"net/http"
+
+	"backend_gen/internal/usecase"
+	httpErr "backend_gen/pkg/http/error"
 )
 
-func OnSocket(uc usecase.WebSocketUseCase, sensorID string, sensorToken string) http.HandlerFunc {
+func OnSocket(
+	uc usecase.WebSocketUseCase,
+	sensorID string,
+	sensorToken string,
+	wsAddr string,
+	wsPort string,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		url := fmt.Sprintf("ws://localhost:8080/ws/sensor?sensor_id=%s", sensorID)
+		url := fmt.Sprintf("ws://%s:%s/ws/sensor?sensor_id=%s", wsAddr, wsPort, sensorID)
 		err := uc.Connect(url, sensorToken)
 		if err != nil {
 			httpErr.InternalError(w, fmt.Errorf("failed to connect: %w", err))

@@ -1,6 +1,9 @@
 server:
   addr: "localhost"
-  port: "8082"
+  port: "8000"
   sensor_id: "1234567890"
+websocket:
+  addr: "localhost"
+  port: "8080"
 log:
   level: "info"
