@@ -70,7 +70,8 @@ func (uc *WebSocketUseCase) StartSendingMessages() error {
 		uc.StopSendingMessages()
 	}
 
-	slog.Info("Starting periodic message sending", "interval", "120ms")
+	uc.generator.Reset()
+	slog.Info("Generator reset, starting periodic message sending", "interval", "120ms")
 
 	//.12 сек
 	uc.ticker = time.NewTicker(120 * time.Millisecond)
@@ -113,6 +114,8 @@ func (uc *WebSocketUseCase) StopSendingMessages() {
 		close(uc.stopCh)
 		uc.stopCh = nil
 	}
+	uc.generator.Reset()
+	slog.Info("Generator stopped and reset")
 }
 
 func NewWebSocketUseCase(client websocket.Client, dataGenerator generator.DataGenerator) usecase.WebSocketUseCase {

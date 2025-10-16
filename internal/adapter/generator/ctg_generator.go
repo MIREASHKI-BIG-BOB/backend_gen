@@ -11,8 +11,7 @@ import (
 // ctgGenerator реализует реалистичную генерацию CTG данных
 // с эмуляцией схваток, гипоксии, вариабельности и децелераций
 type ctgGenerator struct {
-	timeMS int64
-	rng    *rand.Rand
+	rng *rand.Rand
 
 	// Состояние схватки
 	inContraction bool
@@ -33,7 +32,6 @@ type ctgGenerator struct {
 // NewCTGGenerator создает новый CTG генератор
 func NewCTGGenerator() generator.DataGenerator {
 	return &ctgGenerator{
-		timeMS:        0,
 		rng:           rand.New(rand.NewSource(time.Now().UnixNano())),
 		currentBPM:    135,
 		currentUterus: 17,
@@ -64,8 +62,6 @@ func (g *ctgGenerator) GenerateNext(timestamp float64) websocket.SensorData {
 
 // update обновляет состояние генератора (эквивалент Update() из realgen.go)
 func (g *ctgGenerator) update() {
-	g.timeMS += 120
-
 	// Инициализация гипоксии в 50% случаев (один раз)
 	if !g.hypoxiaStarted {
 		g.hypoxia = g.rng.Float64() < 0.5
@@ -152,7 +148,6 @@ func (g *ctgGenerator) update() {
 
 // Reset сбрасывает генератор в начальное состояние
 func (g *ctgGenerator) Reset() {
-	g.timeMS = 0
 	g.rng = rand.New(rand.NewSource(time.Now().UnixNano()))
 	g.inContraction = false
 	g.phase = 0
