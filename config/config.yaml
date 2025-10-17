@@ -5,5 +5,7 @@ server:
 websocket:
   addr: "localhost"
   port: "8080"
+generator:
+  hypoxia_mode: 0
 log:
   level: "info"

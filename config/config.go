@@ -12,6 +12,11 @@ type Config struct {
 	Server    server
 	Log       log
 	WebSocket websocket
+	Generator generator
+}
+
+type generator struct {
+	HypoxiaMode int `yaml:"hypoxia_mode" envconfig:"HYPOXIA_MODE"`
 }
 
 type log struct {

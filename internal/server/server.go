@@ -55,7 +55,7 @@ func (s *Server) init() error {
 
 func (s *Server) initAdapters() {
 	s.wsClient = wsAdapter.NewClient()
-	s.dataGenerator = generatorAdapter.NewCTGGenerator()
+	s.dataGenerator = generatorAdapter.NewCTGGenerator(s.cfg.Generator.HypoxiaMode)
 }
 
 func (s *Server) initUseCases() {
